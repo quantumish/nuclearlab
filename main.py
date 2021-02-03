@@ -30,8 +30,20 @@ df = pd.read_csv("./tissueyellow.csv")
 ncr = df["NCR"][1:].reset_index()["NCR"]
 wid = df["Width"][1:].reset_index()["Width"]
 ncr_sig = df["NCR \sigma"][1:].reset_index()["NCR \sigma"]
+a=gen_approx(wid, optim(0.9, wid, ncr, ncr_sig).x[0])
 print(gen_approx(ncr, optim(0.9, wid, ncr, ncr_sig).x[0]))
-plt.plot(wid, gen_approx(wid, optim(0.9, wid, ncr, ncr_sig).x[0]))
-plt.plot(wid, ncr)
+
+import numpy as np
+from scipy.interpolate import make_interp_spline, BSpline, interp1d
+xnew = np.linspace(wid.min(), wid.max(), 300)
+ncr_smooth = interp1d(wid, ncr)
+
+plt.plot(xnew, ncr_smooth(xnew))
+print(ncr_smooth)
+#ax, caps, bars = plt.errorbar(xnew, ncr_smooth, capsize=0, color="#6cad50")
+
+#[bar.set_alpha(0.3) for bar in bars]
+
+#plt.fill_between(wid, ncr-ncr_sig, ncr+ncr_sig, alpha=0.2, color="#6cad50")
+#plt.plot(wid, a)
 plt.show()
-#print(pearsonstat(a, ncr, ncr_sig))
