@@ -20,23 +20,18 @@ def gen_approx(data, T):
 def deriv(f, h=0.001):
     return lambda x : (f(x+h)-f(x))/h
 
-def optim (initial, ncr, ncr_sig):
-    f = lambda x : pearsonstat(gen_approx(ncr, x), ncr, ncr_sig)
-    f = deriv(f)
-    y = f(initial)
-    x = initial
-    while (abs(y) >= 0.001):
-        sgn = 1
-        if deriv(f)(x) > 0: sgn = -1
-        x += sgn * f(x)/deriv(f)(x)
-        y = f(x)
-        print(x, y)
-    print(deriv(f)(x))
+import scipy.optimize
+def optim (initial, wid, ncr, ncr_sig):
+    f = lambda x : pearsonstat(gen_approx(wid, x), ncr, ncr_sig)
+    x = scipy.optimize.minimize(f, initial)
     return x
 
 df = pd.read_csv("./tissueyellow.csv")
 ncr = df["NCR"][1:].reset_index()["NCR"]
+wid = df["Width"][1:].reset_index()["Width"]
 ncr_sig = df["NCR \sigma"][1:].reset_index()["NCR \sigma"]
-a = gen_approx(ncr, 0.946)
-print(optim(0.9, ncr, ncr_sig))
+print(gen_approx(ncr, optim(0.9, wid, ncr, ncr_sig).x[0]))
+plt.plot(wid, gen_approx(wid, optim(0.9, wid, ncr, ncr_sig).x[0]))
+plt.plot(wid, ncr)
+plt.show()
 #print(pearsonstat(a, ncr, ncr_sig))
