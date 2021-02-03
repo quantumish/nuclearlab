@@ -2,20 +2,20 @@ import matplotlib.pyplot as plt
 import pandas as pd
 
 def NCRplot(df):
-  plt.plot(df["Width"][:11], df["NCR"][:11])
+    plt.plot(df["Width"][:11], df["NCR"][:11])
   plt.show()
 
 def pearsonstat(D_i, M_i, sig_i):
-  print(D_i, M_i, sig_i)
+    print(D_i, M_i, sig_i)
   sum = 0
   for stat in range(len(D_i)):
-    sum += ((D_i[stat]-M_i[stat])/(sig_i[stat]))**2
+      sum += ((D_i[stat]-M_i[stat])/(sig_i[stat]))**2
   return sum
 
 def gen_approx(data, T):
-  new = []
+    new = []
   for i in data:
-    print(i)
+      print(i)
     new.append(0.5 ** (i/T))
   return new
 
