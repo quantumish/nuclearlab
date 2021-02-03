@@ -1,9 +1,12 @@
 import matplotlib.pyplot as plt
 import pandas as pd
+import scipy.optimize
+
 
 def NCRplot(df):
     plt.plot(df["Width"][:11], df["NCR"][:11])
     plt.show()
+
 
 def pearsonstat(D_i, M_i, sig_i):
     sum = 0
@@ -11,20 +14,23 @@ def pearsonstat(D_i, M_i, sig_i):
         sum += ((D_i[stat]-M_i[stat])/(sig_i[stat]))**2
     return sum
 
+
 def gen_approx(data, T):
     new = []
     for i in data:
         new.append(0.5 ** (i/T))
     return new
 
-def deriv(f, h=0.001):
-    return lambda x : (f(x+h)-f(x))/h
 
-import scipy.optimize
+def deriv(f, h=0.001):
+    return lambda x: (f(x+h)-f(x))/h
+
+
 def optim (initial, wid, ncr, ncr_sig):
-    f = lambda x : pearsonstat(gen_approx(wid, x), ncr, ncr_sig)
+    f = lambda x: pearsonstat(gen_approx(wid, x), ncr, ncr_sig)
     x = scipy.optimize.minimize(f, initial)
     return x
+
 
 df = pd.read_csv("./tissueyellow.csv")
 ncr = df["NCR"][1:].reset_index()["NCR"]
