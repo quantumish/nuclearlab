@@ -20,7 +20,8 @@ def pearsonstat(D_i, M_i, sig_i):
 def gen_approx(data, T):
     new = []
     for i in data:
-        new.append(0.5 ** (i/T))
+        if (T != 0): new.append(0.5 ** (i/T))
+        else: new.append(0.5 ** (i/0.001))
     return new
 
 
@@ -30,25 +31,24 @@ def deriv(f, h=0.001):
 
 def optim (initial, wid, ncr, ncr_sig):
     f = lambda x: pearsonstat(gen_approx(wid, x), ncr, ncr_sig)
-    vals = []
-    lin = np.linspace(wid.min(), wid.max(), 300)
-    for i in lin:
-        vals.append(f(i))
-    plt.plot(lin, vals)
-    x = scipy.optimize.minimize(f, initial)
-    print(x.x)
-    plt.show()
-    f2 = lambda n: (f(n) - (x.x+6.63))
-    a = scipy.optimize.root(f2, [ncr.min(), ncr.max()])
-    vals = []
-    lin = np.linspace(wid.min(), wid.max(), 300)
-    for i in lin:
-        vals.append(f2(i))
-    plt.plot(lin, vals)
-    print(a.x, [0]*len(a))
-    plt.scatter(a.x, [0]*2)
-    plt.show()
-    return (a, x)
+    # vals = []
+    # lin = np.linspace(wid.min(), wid.max(), 300)
+    # for i in lin:
+    #     vals.append(f(i))
+    # plt.plot(lin, vals)
+    x = scipy.optimize.minimize(f, initial).x
+    f2 = lambda n: (f(n) - (x+6.63))
+    a = scipy.optimize.bisect(f2, wid.min(), x)
+    b = scipy.optimize.bisect(f2, x, wid.max())
+    # vals = []
+    # lin = np.linspace(wid.min(), wid.max(), 300)
+    # for i in lin:
+    #     vals.append(f2(i))
+    # plt.plot(lin, vals)
+    # plt.scatter(a, [0])
+    # plt.scatter(b, [0])
+    # plt.show()
+    return (a, b, x)
 
 df = pd.read_csv("./tissueyellow.csv")
 ncr = df["NCR"][1:].reset_index()["NCR"]
