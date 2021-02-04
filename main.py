@@ -50,31 +50,38 @@ def optim (initial, wid, ncr, ncr_sig):
     # plt.show()
     return (a, b, x)
 
-df = pd.read_csv("./tissueyellow.csv")
-ncr = df["NCR"][1:].reset_index()["NCR"]
-wid = df["Width"][1:].reset_index()["Width"]
-ncr_sig = df["NCR \sigma"][1:].reset_index()["NCR \sigma"]
-o=optim(0.9, wid, ncr, ncr_sig)
-print(o[1].x[0], o[0].x[0], o[0].x[1])
-a=gen_approx(wid, o[1].x[0])
-a1=gen_approx(wid, o[0].x[0])
-a2=gen_approx(wid, o[0].x[1])
+def graph_file(name):
+    df = pd.read_csv(name)
+    ncr = df["NCR"][1:].reset_index()["NCR"]
+    if len(ncr) < 3: return
+    wid = df["Width"][1:].reset_index()["Width"]
+    ncr_sig = df["NCR \sigma"][1:].reset_index()["NCR \sigma"]
+    o=optim(0.9, wid, ncr, ncr_sig)
+    a=gen_approx(wid, o[2])
+    a1=gen_approx(wid, o[0])
+    a2=gen_approx(wid, o[1])
 
-xnew = np.linspace(wid.min(), wid.max(), 300)
-spl = make_interp_spline(wid, ncr, k=3)
-ncr_smooth = spl(xnew)
-spl = make_interp_spline(wid, ncr_sig, k=3)
-ncr_sig_smooth = spl(xnew)
+    xnew = np.linspace(wid.min(), wid.max(), 300)
+    spl = make_interp_spline(wid, a, k=3)
+    a_smooth = spl(xnew)
+    spl = make_interp_spline(wid, a1, k=3)
+    a1_smooth = spl(xnew)
+    spl = make_interp_spline(wid, a2, k=3)
+    a2_smooth = spl(xnew)
 
-# plt.plot(xnew, ncr_smooth, color="#6cad50")
+    plt.plot(wid, ncr, color="#1f77b4")
 
-# ax, bars, caps = plt.errorbar(wid, ncr, ncr_sig, color="#6cad50", alpha=0.2)
+    ax, bars, caps = plt.errorbar(wid, ncr, ncr_sig, alpha=0.2)
 
-# [bar.set_alpha(1) for bar in bars]
+    [bar.set_alpha(1) for bar in bars]
 
-# plt.fill_between(xnew, ncr_smooth-ncr_sig_smooth, ncr_smooth+ncr_sig_smooth, alpha=0.2, color="#6cad50")
-plt.plot(wid, a)
-plt.plot(wid, a1)
-plt.plot(wid, a2)
-plt.fill_between(wid, a1, a2, alpha=0.2, color="#6cad50")
-plt.show()
+    plt.fill_between(wid, ncr-ncr_sig, ncr+ncr_sig, alpha=0.1, color="#1f77b4")
+    plt.plot(xnew, a_smooth, color="#6cad50")
+    plt.fill_between(xnew, a1_smooth, a2_smooth, alpha=0.1, color="#6cad50")
+    plt.show()
+
+import os
+for i in os.listdir("."):
+    if i.endswith(".csv"):
+        print(i)
+        graph_file("./"+i)
