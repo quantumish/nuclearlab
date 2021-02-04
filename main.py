@@ -93,14 +93,6 @@ def graph_manual(fig, axs, i, ii, name, g, g1, g2):
     a1=gen_approx(wid, g1)
     a2=gen_approx(wid, g2)
 
-    xnew = np.linspace(wid.min(), wid.max(), 300)
-    spl = make_interp_spline(wid, a, k=3)
-    a_smooth = spl(xnew)
-    spl = make_interp_spline(wid, a1, k=3)
-    a1_smooth = spl(xnew)
-    spl = make_interp_spline(wid, a2, k=3)
-    a2_smooth = spl(xnew)
-
     axs[i,ii].plot(wid, ncr, color="#1f77b4")
 
     ax, bars, caps = axs[i,ii].errorbar(wid, ncr, ncr_sig, alpha=0.2)
@@ -108,8 +100,8 @@ def graph_manual(fig, axs, i, ii, name, g, g1, g2):
     [bar.set_alpha(1) for bar in bars]
 
     axs[i,ii].fill_between(wid, ncr-ncr_sig, ncr+ncr_sig, alpha=0.1, color="#1f77b4")
-    axs[i,ii].plot(xnew, a_smooth, color="#6cad50")
-    axs[i,ii].fill_between(xnew, a1_smooth, a2_smooth, alpha=0.1, color="#6cad50")
+    axs[i,ii].plot(wid, a, color="#6cad50")
+    axs[i,ii].fill_between(wid, a1, a2, alpha=0.1, color="#6cad50")
     axs[i,ii].text(.5,.9,name, horizontalalignment='center', transform=axs[i,ii].transAxes)
 
 import os
@@ -123,7 +115,7 @@ for i in os.listdir("."):
         except:
             # axs[c//3, c%3].text(0.5,0.5,"ValueError Pain", horizontalalignment='center', verticalalignment='center', transform=axs[c//3,c%3].transAxes)
             # axs[c//3,c%3].text(.5,.9,"./"+i, horizontalalignment='center', transform=axs[c//3,c%3].transAxes)
-            graph_manual(fig, axs, c//3, c%3, "./"+i, 0.5, 0.4, 0.6)
+            graph_manual(fig, axs, c//3, c%3, "./"+i, 0, 0, 0)
             pass
         c+=1
 axs[2,2].axis("off")
