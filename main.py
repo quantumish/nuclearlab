@@ -31,15 +31,18 @@ def deriv(f, h=0.001):
 
 def optim (initial, wid, ncr, ncr_sig):
     f = lambda x: pearsonstat(gen_approx(wid, x), ncr, ncr_sig)
-    # vals = []
-    # lin = np.linspace(wid.min(), wid.max(), 300)
-    # for i in lin:
-    #     vals.append(f(i))
-    # plt.plot(lin, vals)
     x = scipy.optimize.minimize(f, initial).x
+    print(wid)
+    print(x, f(0.04))
     f2 = lambda n: (f(n) - (x+6.63))
-    a = scipy.optimize.bisect(f2, wid.min(), x)
-    b = scipy.optimize.bisect(f2, x, wid.max())
+    vals = []
+    lin = np.linspace(0, 20*wid.max(), 300)
+    for i in lin:
+        vals.append(f(i))
+    plt.plot(lin, vals)
+    plt.show()
+    a = scipy.optimize.bisect(f2, 0, x)
+    b = scipy.optimize.bisect(f2, x, 10000000)
     # vals = []
     # lin = np.linspace(wid.min(), wid.max(), 300)
     # for i in lin:
@@ -82,15 +85,17 @@ def graph_file(fig, axs, i, ii, name):
 
 
 import os
-fig, axs = plt.subplots(3,3)
+# fig, axs = plt.subplots(3,3)
+fig = 2
+axs = []
 c = 0
 for i in os.listdir("."):
     if i.endswith(".csv"):
         print(i)
         try:
             graph_file(fig, axs, c//3, c%3, "./"+i)
-        except ValueError:
-            axs[c//3, c%3].text(0.5,0.5,"ValueError pain", horizontalalignment='center', verticalalignment='center', transform=axs[c//3,c%3].transAxes)
+        except:
+            axs[c//3, c%3].text(0.5,0.5,"ValueError Pain", horizontalalignment='center', verticalalignment='center', transform=axs[c//3,c%3].transAxes)
             axs[c//3,c%3].text(.5,.9,"./"+i, horizontalalignment='center', transform=axs[c//3,c%3].transAxes)
             pass
         c+=1
