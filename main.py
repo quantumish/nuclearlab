@@ -1,6 +1,8 @@
 import matplotlib.pyplot as plt
 import pandas as pd
 import scipy.optimize
+import numpy as np
+from scipy.interpolate import make_interp_spline, BSpline, interp1d
 
 
 def NCRplot(df):
@@ -28,9 +30,24 @@ def deriv(f, h=0.001):
 
 def optim (initial, wid, ncr, ncr_sig):
     f = lambda x: pearsonstat(gen_approx(wid, x), ncr, ncr_sig)
+    vals = []
+    lin = np.linspace(wid.min(), wid.max(), 300)
+    for i in lin:
+        vals.append(f(i))
+    plt.plot(lin, vals)
     x = scipy.optimize.minimize(f, initial)
+    print(x.x)
+    plt.show()
     f2 = lambda n: (f(n) - (x.x+6.63))
     a = scipy.optimize.root(f2, [ncr.min(), ncr.max()])
+    vals = []
+    lin = np.linspace(wid.min(), wid.max(), 300)
+    for i in lin:
+        vals.append(f2(i))
+    plt.plot(lin, vals)
+    print(a.x, [0]*len(a))
+    plt.scatter(a.x, [0]*2)
+    plt.show()
     return (a, x)
 
 df = pd.read_csv("./tissueyellow.csv")
@@ -43,8 +60,6 @@ a=gen_approx(wid, o[1].x[0])
 a1=gen_approx(wid, o[0].x[0])
 a2=gen_approx(wid, o[0].x[1])
 
-import numpy as np
-from scipy.interpolate import make_interp_spline, BSpline, interp1d
 xnew = np.linspace(wid.min(), wid.max(), 300)
 spl = make_interp_spline(wid, ncr, k=3)
 ncr_smooth = spl(xnew)
