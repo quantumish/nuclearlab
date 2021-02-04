@@ -50,10 +50,10 @@ def optim (initial, wid, ncr, ncr_sig):
     # plt.show()
     return (a, b, x)
 
-def graph_file(name):
+
+def graph_file(fig, axs, i, ii, name):
     df = pd.read_csv(name)
     ncr = df["NCR"][1:].reset_index()["NCR"]
-    if len(ncr) < 3: return
     wid = df["Width"][1:].reset_index()["Width"]
     ncr_sig = df["NCR \sigma"][1:].reset_index()["NCR \sigma"]
     o=optim(0.9, wid, ncr, ncr_sig)
@@ -69,19 +69,31 @@ def graph_file(name):
     spl = make_interp_spline(wid, a2, k=3)
     a2_smooth = spl(xnew)
 
-    plt.plot(wid, ncr, color="#1f77b4")
+    axs[i,ii].plot(wid, ncr, color="#1f77b4")
 
-    ax, bars, caps = plt.errorbar(wid, ncr, ncr_sig, alpha=0.2)
+    ax, bars, caps = axs[i,ii].errorbar(wid, ncr, ncr_sig, alpha=0.2)
 
     [bar.set_alpha(1) for bar in bars]
 
-    plt.fill_between(wid, ncr-ncr_sig, ncr+ncr_sig, alpha=0.1, color="#1f77b4")
-    plt.plot(xnew, a_smooth, color="#6cad50")
-    plt.fill_between(xnew, a1_smooth, a2_smooth, alpha=0.1, color="#6cad50")
-    plt.show()
+    axs[i,ii].fill_between(wid, ncr-ncr_sig, ncr+ncr_sig, alpha=0.1, color="#1f77b4")
+    axs[i,ii].plot(xnew, a_smooth, color="#6cad50")
+    axs[i,ii].fill_between(xnew, a1_smooth, a2_smooth, alpha=0.1, color="#6cad50")
+    axs[i,ii].text(.5,.9,name, horizontalalignment='center', transform=axs[i,ii].transAxes)
+
 
 import os
+fig, axs = plt.subplots(3,3)
+c = 0
 for i in os.listdir("."):
     if i.endswith(".csv"):
         print(i)
-        graph_file("./"+i)
+        try:
+            graph_file(fig, axs, c//3, c%3, "./"+i)
+        except ValueError:
+            axs[c//3, c%3].text(0.5,0.5,"ValueError pain", horizontalalignment='center', verticalalignment='center', transform=axs[c//3,c%3].transAxes)
+            axs[c//3,c%3].text(.5,.9,"./"+i, horizontalalignment='center', transform=axs[c//3,c%3].transAxes)
+            pass
+        c+=1
+axs[2,2].axis("off")
+axs[2,1].axis("off")
+plt.show()
