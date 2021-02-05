@@ -1,4 +1,4 @@
-import matplotlib.pyplot as plt
+cimport matplotlib.pyplot as plt
 import pandas as pd
 import scipy.optimize
 import numpy as np
@@ -53,7 +53,6 @@ def optim (initial, wid, ncr, ncr_sig):
     # plt.show()
     return (a, b, x)
 
-
 def graph_file(fig, axs, i, ii, name):
     df = pd.read_csv(name)
     ncr = df["NCR"][1:].reset_index()["NCR"]
@@ -83,26 +82,6 @@ def graph_file(fig, axs, i, ii, name):
     axs[i,ii].fill_between(xnew, a1_smooth, a2_smooth, alpha=0.1, color="#6cad50")
     axs[i,ii].text(.5,.9,name, horizontalalignment='center', transform=axs[i,ii].transAxes)
 
-
-def graph_manual(fig, axs, i, ii, name, g, g1, g2):
-    df = pd.read_csv(name)
-    ncr = df["NCR"][1:].reset_index()["NCR"]
-    wid = df["Width"][1:].reset_index()["Width"]
-    ncr_sig = df["NCR \sigma"][1:].reset_index()["NCR \sigma"]
-    a=gen_approx(wid, g)
-    a1=gen_approx(wid, g1)
-    a2=gen_approx(wid, g2)
-
-    axs[i,ii].plot(wid, ncr, color="#1f77b4")
-
-    ax, bars, caps = axs[i,ii].errorbar(wid, ncr, ncr_sig, alpha=0.2)
-
-    [bar.set_alpha(1) for bar in bars]
-
-    axs[i,ii].fill_between(wid, ncr-ncr_sig, ncr+ncr_sig, alpha=0.1, color="#1f77b4")
-    axs[i,ii].plot(wid, a, color="#6cad50")
-    axs[i,ii].fill_between(wid, a1, a2, alpha=0.1, color="#6cad50")
-    axs[i,ii].text(.5,.9,name, horizontalalignment='center', transform=axs[i,ii].transAxes)
 
 import os
 fig, axs = plt.subplots(3,3)
