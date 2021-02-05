@@ -31,7 +31,7 @@ def deriv(f, h=0.001):
 def optim (initial, wid, ncr, ncr_sig):
     f = lambda x: pearsonstat(gen_approx(wid, x), ncr, ncr_sig)
     x = scipy.optimize.minimize(f, initial).x
-    print(x)
+    print(gen_approx(wid, x))
     f2 = lambda n: (f(n) - (x+6.63))
     vals = []
     lin = np.linspace(0, 20*wid.max(), 300)
@@ -41,7 +41,7 @@ def optim (initial, wid, ncr, ncr_sig):
     plt.show()
     if (f2(0) < 0): a = 0
     else: a = scipy.optimize.bisect(f2, 0, x)
-    if (f2(10000000) < 0): b = 0
+    if (f2(10000000) < 0): b = 10000000
     else: b = scipy.optimize.bisect(f2, x, 10000000)
     # vals = []
     # lin = np.linspace(wid.min(), wid.max(), 300)
@@ -62,6 +62,7 @@ def graph_file(fig, axs, i, ii, name):
     xnew = np.linspace(wid.min(), wid.max(), 300)
     a=gen_approx(xnew, o[2])
     a1=gen_approx(xnew, o[0])
+
     a2=gen_approx(xnew, o[1])
 
     axs[i,ii].plot(wid, ncr, color="#1f77b4")
@@ -82,10 +83,7 @@ c = 0
 for i in os.listdir("."):
     if i.endswith(".csv"):
         print(i)
-        try:
-            graph_file(fig, axs, c//3, c%3, "./"+i)
-        except:
-            input("")
+        graph_file(fig, axs, c//3, c%3, "./"+i)
         c+=1
 
 axs[2,2].axis("off")
