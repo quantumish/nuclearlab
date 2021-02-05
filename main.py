@@ -4,10 +4,15 @@ import scipy.optimize
 import numpy as np
 from scipy.interpolate import make_interp_spline, BSpline, interp1d
 
+# 1. NaN s stat
+# 2. Gigantic s stat
+# 3.
+
+
 def pearsonstat(D_i, M_i, sig_i):
     sum = 0
-    for stat in range(len(D_i)):
-        sum += ((D_i[stat]-M_i[stat])/(sig_i[stat]))**2
+    for i in range(len(D_i)):
+        sum += ((D_i[i]-M_i[i])/(sig_i[i]))**2
     return sum
 
 
@@ -26,13 +31,14 @@ def deriv(f, h=0.001):
 def optim (initial, wid, ncr, ncr_sig):
     f = lambda x: pearsonstat(gen_approx(wid, x), ncr, ncr_sig)
     x = scipy.optimize.minimize(f, initial).x
+    print(x)
     f2 = lambda n: (f(n) - (x+6.63))
-    # vals = []
-    # lin = np.linspace(0, 20*wid.max(), 300)
-    # for i in lin:
-    #     vals.append(f2(i))
-    # plt.plot(lin, vals)
-    # plt.show()
+    vals = []
+    lin = np.linspace(0, 20*wid.max(), 300)
+    for i in lin:
+        vals.append(f2(i))
+    plt.plot(lin, vals)
+    plt.show()
     if (f2(0) < 0): a = 0
     else: a = scipy.optimize.bisect(f2, 0, x)
     if (f2(10000000) < 0): b = 0
@@ -76,8 +82,12 @@ c = 0
 for i in os.listdir("."):
     if i.endswith(".csv"):
         print(i)
-        graph_file(fig, axs, c//3, c%3, "./"+i)
+        try:
+            graph_file(fig, axs, c//3, c%3, "./"+i)
+        except:
+            input("")
         c+=1
+
 axs[2,2].axis("off")
 axs[2,1].axis("off")
 plt.show()
