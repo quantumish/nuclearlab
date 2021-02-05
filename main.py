@@ -32,13 +32,13 @@ def optim(initial, wid, ncr, ncr_sig):
     f = lambda x: pearsonstat(gen_approx(wid, x), ncr, ncr_sig)
     x = scipy.optimize.minimize(f, initial).x
     print(gen_approx(wid, x))
-    f2 = lambda n: (f(n) - (x+6.63))
-    vals = []
-    lin = np.linspace(0, 20*wid.max(), 300)
-    for i in lin:
-        vals.append(f2(i))
-    plt.plot(lin, vals)
-    plt.show()
+    f2 = lambda n: (f(n) - (f(x)+6.63))
+    # vals = []
+    # lin = np.linspace(0, 20*wid.max(), 300)
+    # for i in lin:
+    #     vals.append(f2(i))
+    # plt.plot(lin, vals)
+    # plt.show()
     if (f2(0) < 0): a = 0
     else: a = scipy.optimize.bisect(f2, 0, x)
     if (f2(10000000) < 0): b = 10000000
@@ -78,7 +78,8 @@ def graph_file(fig, axs, i, ii, name):
 
     axs[i, ii].fill_between(wid, ncr-ncr_sig, ncr+ncr_sig, alpha=0.1, color="#1f77b4")
     axs[i, ii].plot(xnew, a, color="#6cad50")
-    axs[i, ii].fill_between(xnew, a1, a2, alpha=0.1, color="#6cad50")
+    axs[i, ii].plot(xnew, a1)
+    axs[i, ii].plot(xnew, a2)
     axs[i, ii].text(.5, .9, name, horizontalalignment='center', transform=axs[i, ii].transAxes)
 
 
