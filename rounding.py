@@ -1,6 +1,13 @@
 import csv
+import tkinter as tk
+from tkinter import filedialog
 
-inputFile = input("Input file: ")
+
+#inputFile = input("Input file: ")
+root = tk.Tk()
+root.withdraw()
+
+inputFile = filedialog.askopenfilename()
 csvarray = []
 
 with open(inputFile, newline = "") as File:
