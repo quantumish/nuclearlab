@@ -6,6 +6,11 @@ import os
 
 import warnings
 warnings.filterwarnings("ignore")
+plt.rcParams.update({
+    "text.usetex": True,
+    "font.family": "sans-serif",
+    "font.sans-serif": ["Helvetica"],
+})
 
 def pearsonstat(D_i, M_i, sig_i):
     sum = 0
@@ -37,8 +42,8 @@ def optim(initial, wid, ncr, ncr_sig):
     return (a, b, x, f(x))
 
 
-def graph_file(fig, axs, i, ii, name):
-    df = pd.read_csv(name)
+def graph_file(fig, axs, i, ii, filename, name):
+    df = pd.read_csv(filename)
     ncr = df["NCR"][1:].reset_index()["NCR"]
     wid = df["Width"][1:].reset_index()["Width"]
     ncr_sig = df["NCR \sigma"][1:].reset_index()["NCR \sigma"]
@@ -52,10 +57,11 @@ def graph_file(fig, axs, i, ii, name):
     a = gen_approx(xnew, o[2])
     a1 = gen_approx(xnew, o[0])
     a2 = gen_approx(xnew, o[1])
-    print(name[2:-4], round(o[2][0], 4), round(o[0],4), round(o[1],4), round(o[3][0], 4), len(wid)-1, sep="\t")
+    print(filename[2:-4], round(o[2][0], 4), round(o[0],4), round(o[1],4), round(o[3][0], 4), len(wid)-1, sep="\t")
 
     axs[i, ii].plot(wid, ncr, color="#1f77b4")
 
+    ncr_sig[0] = 0
     ax, bars, caps = axs[i,ii].errorbar(wid, ncr, ncr_sig, alpha=0.2)
 
     [bar.set_alpha(1) for bar in bars]
@@ -64,16 +70,30 @@ def graph_file(fig, axs, i, ii, name):
     axs[i, ii].plot(xnew, a, color="#6cad50")
     axs[i, ii].plot(xnew, a1)
     axs[i, ii].plot(xnew, a2)
-    axs[i, ii].text(.5, .9, name, horizontalalignment='center', transform=axs[i, ii].transAxes)
+
+    axs[i, ii].set_title("Absorber Width vs NCR (" + name[0] + ", " + name[1]+")")
+    axs[i, ii].set_xlabel("Width (in)")
+    axs[i, ii].set_ylabel("NCR")
 
 
+print("Name\t\tT_best\tT_min\tT_max\tS_min\tN-1")
+titles = [("Plastic", "Orange"),("Plastic", "Green"), ("Tissue", "Yellow"), ("Lead", "Green"), ("Aluminum", "Green"), ("Lead", "Orange"), ("Aluminum", "Orange")]
 fig, axs = plt.subplots(3,3)
 c = 0
 for i in os.listdir("."):
     if i.endswith(".csv"):
-        graph_file(fig, axs, c//3, c%3, "./"+i)
+        graph_file(fig, axs, c//3, c%3, "./"+i,titles[c])
         c+=1
 
 axs[2, 2].axis("off")
 axs[2, 1].axis("off")
+plt.subplots_adjust(left=0.07, right=0.93, top=0.95, bottom=0.05)
+custom_lines = [plt.Line2D([0], [0], color="#1f77b4", lw=2),
+                plt.Line2D([0], [0], color='w', markerfacecolor="#1f77b4", marker='o', markersize=15, alpha=0.1),
+                plt.Line2D([0], [0], color="#6cad50", lw=2),
+                plt.Line2D([0], [0], color="#ff7f0e", lw=2),
+                plt.Line2D([0], [0], color="#2ca02c", lw=2)]
+plt.legend(custom_lines, ["Recorded NCR", "Recorded NCR error", "Fitted NCR", "Fitted NCR (min)", "Fitted NCR (max)"])
+import textwrap
+axs[2,1].text(0, 0.8, "\n".join(textwrap.wrap("Figure A: Graphs of absorber width vs recorded and fit NCR (given by $0.5^{t/T}$) for each combination of sources and absorbers. Uncertainty in recorded NCR is depicted via the transparent blue region, whilst uncertainty in fit is shown through the curves for the maximum and minimum half thickness.", 70)))
 plt.show()
