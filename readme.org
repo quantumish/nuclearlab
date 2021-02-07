@@ -1,0 +1,24 @@
+#+TITLE: Radiation Absorption Lab
+
+* About
+This repository stores the code used to determine half-thicknesses of various materials as well generate tables/figures for the associated lab report. It also contains the data analyzed to create all these and should be entirely reproducible.
+
+Dependencies: SciPy, pandas, NumPy, and matplotlib.
+* Expected Output
+
+The program should print the following to stdout:
+
+```
+Name            T_best	T_min	T_max	  S_min     N-1
+plasticorange	0.8736	0.4466	8.7385	  0.0       1
+plasticgreen	0.0564	0.0448	0.0737	  2.356     4
+tissueyellow	1.0371	0.9314	1.1536	  0.3733	6
+leadgreen       0.0012	0       10000000  0.0022	1
+aluminumgreen	0.0259	0.0229	0.0292	  3.5908	10
+leadorange      0.4391	0.368	0.5369	  3.129     4
+aluminumorange	1.7843	0.918	19.9563	  3.5532	11
+```
+
+The program should also display the following graph:
+
+[[file:./graph.png]]
