@@ -3,7 +3,7 @@
 * About
 This repository stores the code used to determine half-thicknesses of various materials as well generate tables/figures for the associated lab report. It also contains the data analyzed to create all these and should be entirely reproducible.
 
-The full report this was made for can be seen [[file:./Radiation\ Lab.pdf][here]].
+The full report this was made for can be seen [[file:./report.pdf][here]].
 
 Dependencies: SciPy, pandas, NumPy, and matplotlib.
 * Expected Output
