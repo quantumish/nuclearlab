@@ -75,24 +75,46 @@ def graph_file(fig, axs, i, ii, filename, name):
     axs[i, ii].set_xlabel("Width (in)")
     axs[i, ii].set_ylabel("NCR")
 
+def graph():
+    print("Name\t\tT_best\tT_min\tT_max\tS_min\tN-1")
+    titles = [("Plastic", "Orange"),("Plastic", "Green"), ("Tissue", "Yellow"), ("Lead", "Green"), ("Aluminum", "Green"), ("Lead", "Orange"), ("Aluminum", "Orange")]
+    fig, axs = plt.subplots(3,3)
+    c = 0
+    for i in os.listdir("."):
+        if i.endswith(".csv"):
+            graph_file(fig, axs, c//3, c%3, "./"+i,titles[c])
+            c+=1
 
-print("Name\t\tT_best\tT_min\tT_max\tS_min\tN-1")
-titles = [("Plastic", "Orange"),("Plastic", "Green"), ("Tissue", "Yellow"), ("Lead", "Green"), ("Aluminum", "Green"), ("Lead", "Orange"), ("Aluminum", "Orange")]
-fig, axs = plt.subplots(3,3)
-c = 0
-for i in os.listdir("."):
-    if i.endswith(".csv"):
-        graph_file(fig, axs, c//3, c%3, "./"+i,titles[c])
-        c+=1
+    axs[2, 2].axis("off")
+    axs[2, 1].axis("off")
+    plt.subplots_adjust(left=0.07, right=0.93, top=0.95, bottom=0.05)
+    custom_lines = [plt.Line2D([0], [0], color="#1f77b4", lw=2),
+                    plt.Line2D([0], [0], color='w', markerfacecolor="#1f77b4", marker='o', markersize=15, alpha=0.1),
+                    plt.Line2D([0], [0], color="#6cad50", lw=2),
+                    plt.Line2D([0], [0], color='w', markerfacecolor="#6cad50", marker='o', markersize=15, alpha=0.1)]
+    plt.legend(custom_lines, ["Recorded NCR", "Recorded NCR error", "Fitted NCR", "Fitted NCR error"])
+    import textwrap
+    axs[2,1].text(0, 0.8, "\n".join(textwrap.wrap("Figure A: Graphs of absorber width vs recorded and fit NCR (given by $0.5^{t/T}$) for each combination of sources and absorbers. Uncertainty in recorded NCR (propagated with standard formulas) is depicted via the transparent blue region, whilst uncertainty in fit (given by the curves of maximum and minimum half-thickness) is transparent green.", 70)))
+    plt.show()
 
-axs[2, 2].axis("off")
-axs[2, 1].axis("off")
-plt.subplots_adjust(left=0.07, right=0.93, top=0.95, bottom=0.05)
-custom_lines = [plt.Line2D([0], [0], color="#1f77b4", lw=2),
-                plt.Line2D([0], [0], color='w', markerfacecolor="#1f77b4", marker='o', markersize=15, alpha=0.1),
-                plt.Line2D([0], [0], color="#6cad50", lw=2),
-                plt.Line2D([0], [0], color='w', markerfacecolor="#6cad50", marker='o', markersize=15, alpha=0.1)]
-plt.legend(custom_lines, ["Recorded NCR", "Recorded NCR error", "Fitted NCR", "Fitted NCR error"])
-import textwrap
-axs[2,1].text(0, 0.8, "\n".join(textwrap.wrap("Figure A: Graphs of absorber width vs recorded and fit NCR (given by $0.5^{t/T}$) for each combination of sources and absorbers. Uncertainty in recorded NCR (propagated with standard formulas) is depicted via the transparent blue region, whilst uncertainty in fit (given by the curves of maximum and minimum half-thickness) is transparent green.", 70)))
-plt.show()
+def s_curve(filename, a, s):
+    df = pd.read_csv(filename)
+    ncr = df["NCR"][1:].reset_index()["NCR"]
+    wid = df["Width"][1:].reset_index()["Width"]
+    ncr_sig = df["NCR \sigma"][1:].reset_index()["NCR \sigma"]
+    ncr_sig[0] = 0.000001
+    f = lambda x: pearsonstat(gen_approx(wid, x), ncr, ncr_sig)
+    x = scipy.optimize.minimize(f, 0.9).x
+    f2 = lambda n: (f(n) - (f(x)+6.63))
+    vals = []
+    lin = np.linspace(0, 20*wid.max(), 300)
+    for i in lin:
+        vals.append(f2(i))
+    plt.plot(vals)
+    plt.title("Shifted S-statistic Curve ("+a+", "+s+")")
+    plt.xlabel("Fitted Absorber Half-Thickness (in)")
+    plt.ylabel("Shifted S-statistic")
+    plt.show()
+
+# s_curve("./leadgreen.csv", "Lead", "Green")
+graph()
