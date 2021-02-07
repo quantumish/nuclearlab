@@ -21,7 +21,7 @@ with open(inputFile, newline = "") as File:
         for value in row:
             try:
                 moddedrow.append(round(float(value), 4))
-            except:
+            except ValueError:
                 moddedrow.append(value)
         csvarray.append(moddedrow)
 
