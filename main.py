@@ -94,7 +94,7 @@ def graph():
                     plt.Line2D([0], [0], color='w', markerfacecolor="#6cad50", marker='o', markersize=15, alpha=0.1)]
     plt.legend(custom_lines, ["Recorded NCR", "Recorded NCR error", "Fitted NCR", "Fitted NCR error"])
     import textwrap
-    axs[2,1].text(0, 0.8, "\n".join(textwrap.wrap("Figure A: Graphs of absorber width vs recorded and fit NCR (given by $0.5^{t/T}$) for each combination of sources and absorbers. Uncertainty in recorded NCR (propagated with standard formulas) is depicted via the transparent blue region, whilst uncertainty in fit (given by the curves of maximum and minimum half-thickness) is transparent green.", 70)))
+    axs[2,1].text(0, 0.8, "\n".join(textwrap.wrap("Figure 1: Graphs of absorber width vs recorded and fit NCR (given by $0.5^{t/T}$) for each combination of sources and absorbers. Uncertainty in recorded NCR (propagated with standard formulas) is depicted via the transparent blue region, whilst uncertainty in fit (given by the curves of maximum and minimum half-thickness) is transparent green.", 70)))
     plt.show()
 
 def s_curve(filename, a, s):
