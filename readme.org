@@ -3,6 +3,8 @@
 * About
 This repository stores the code used to determine half-thicknesses of various materials as well generate tables/figures for the associated lab report. It also contains the data analyzed to create all these and should be entirely reproducible.
 
+The full report this was made for can be seen [[file:./Radiation\ Lab.pdf][here]].
+
 Dependencies: SciPy, pandas, NumPy, and matplotlib.
 * Expected Output
 
@@ -25,3 +27,4 @@ The program should also display the following graph:
 
 Uncommenting the line at the bottom that calls the function to the draw the shifted S-statistic should yield the following.
 [[file:./curve.png]]
+
