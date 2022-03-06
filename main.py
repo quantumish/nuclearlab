@@ -80,9 +80,9 @@ def graph():
     titles = [("Plastic", "Orange"),("Plastic", "Green"), ("Tissue", "Yellow"), ("Lead", "Green"), ("Aluminum", "Green"), ("Lead", "Orange"), ("Aluminum", "Orange")]
     fig, axs = plt.subplots(3,3)
     c = 0
-    for i in os.listdir("."):
+    for i in os.listdir("./data"):
         if i.endswith(".csv"):
-            graph_file(fig, axs, c//3, c%3, "./"+i,titles[c])
+            graph_file(fig, axs, c//3, c%3, "./data/"+i,titles[c])
             c+=1
 
     axs[2, 2].axis("off")
